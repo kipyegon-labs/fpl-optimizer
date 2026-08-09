@@ -1,0 +1,18 @@
+name: ingest
+on:
+  schedule:
+    # Every 3 hours. GitHub's scheduler is best-effort and can be late or skip
+    # under load — that is why the fetch log records requested_at, so gaps are
+    # visible rather than silent. Move to Fly.io before the season gets serious.
+    - cron: "7 */3 * * *"
+  workflow_dispatch:
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync --frozen
+      - run: uv run python -m fpl.cli snapshot
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
