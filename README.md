@@ -48,11 +48,17 @@ failures. A failed snapshot exits non-zero so the scheduler reports red.
 
 ## Evals
 
-<!-- TODO(phase 1 done): ingestion reliability table — scheduled runs, completed,
-     late by >30min, failed, distinct pre-deadline snapshots per gameweek.
-     Include the gameweeks where coverage was bad. -->
+### Storage (measured 2026-08-09, pre-season)
 
-A repo without an eval table is a demo, not evidence.
+| Endpoint | Raw | Gzipped | Ratio |
+|---|---|---|---|
+| bootstrap-static | 1,348,341 B | 127,778 B | 10.6× |
+| fixtures | 118,021 B | 5,951 B | 19.8× |
+
+At 8 snapshots/day this projects to ~320 MB for the season, plus an unmeasured
+`event-live` component estimated at ~180 MB. That is at or over the Neon free tier.
+Re-measure after GW1. Tripwire at 250 MB: cut baseline cadence to 4/day and go
+hourly only in the 12h pre-deadline window.
 
 ## What broke and how I fixed it
 
