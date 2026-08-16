@@ -12,6 +12,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
-      - run: uv run python scripts/check_staleness.py
+      - run: uv run python -m fpl.check_staleness
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
