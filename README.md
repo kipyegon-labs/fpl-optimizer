@@ -56,7 +56,34 @@ A repo without an eval table is a demo, not evidence.
 
 ## What broke and how I fixed it
 
-<!-- TODO: fill as it happens, not retrospectively. -->
+## Phase 1 evals — ingestion fidelity
+
+Measured 2026-08-16, over 7 days (2026-08-09 → 2026-08-16).
+Cron: `7 */3 * * *` (every 3h, UTC).
+
+| Metric | Target | Measured | Status |
+|---|---|---|---|
+| Endpoints captured | 2 (bootstrap-static, fixtures) | 2 | PASS |
+| Scheduled runs succeeded | — | 61 | — |
+| Fetch events landed in Neon | = successful runs | 62 (61 sched + 1 manual) | PASS |
+| Runs green but zero rows written | 0 | 0 | PASS |
+| Slots skipped entirely (gap ≥ 6h) | 0 | 0 | PASS |
+| Median inter-fetch gap | ~3h00m | 2h47m | PASS |
+| Max inter-fetch gap | < 6h | 4h46m | PASS (jitter, no loss) |
+| Total rows | — | 124 | — |
+| bootstrap-static compression | — | 10.6× | — |
+| fixtures compression | — | 19.8× | — |
+| UPDATE on `raw.fetch` rejected | yes | yes | PASS |
+| DELETE on `raw.fetch` rejected | yes | yes | PASS |
+| Unit tests | 6/6 | 6/6 | PASS |
+
+### Known limitations
+- Gaps are measured between fetch *completions*, so GitHub queue lag and job
+  runtime are not separable. The 4h46m max gap is one late run, not a miss.
+- `event-live` is not yet ingested; season storage projection is therefore a
+  lower bound and must be re-measured after GW1 against the 250 MB tripwire.
+- 3h cadence is coarse for in-match data. Acceptable pre-season; revisit for
+  live gameweeks.
 
 ## Attribution
 
